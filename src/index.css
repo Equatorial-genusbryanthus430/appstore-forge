@@ -1,0 +1,211 @@
+@import 'tailwindcss';
+
+:root {
+  --shell: #f6f6f7;
+  --panel: #ffffff;
+  --line: #e6e6e9;
+  --ink: #16161a;
+  --muted: #77777f;
+  --accent: #1e6ff5;
+}
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--ink);
+  background: var(--shell);
+  -webkit-font-smoothing: antialiased;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.field {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 7px 9px;
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+}
+.field:focus { border-color: var(--accent); }
+
+.swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 7px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+.swatch:hover { transform: scale(1.09); }
+.swatch[data-active='true'] {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.seg {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+.seg[data-active='true'] {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+input[type='range'] { width: 100%; accent-color: var(--accent); }
+input[type='color'] {
+  width: 34px; height: 30px; padding: 0;
+  border: 1px solid var(--line); border-radius: 7px; background: #fff; cursor: pointer;
+}
+
+/* The packaged app uses a hidden-inset title bar, so the top bar doubles as the window
+   drag strip and has to clear the traffic lights on the left. */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 52px;
+  padding: 0 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+body.is-desktop .topbar {
+  padding-left: 84px;
+  -webkit-app-region: drag;
+}
+body.is-desktop .topbar button {
+  -webkit-app-region: no-drag;
+}
+.tab {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.tab[data-active='true'] {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.template-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.template-card:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08); }
+.template-card[data-active='true'] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(30, 111, 245, 0.15);
+}
+
+.toast {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #fff;
+  background: #16161a;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+.toast button {
+  border: none;
+  background: transparent;
+  color: #7fb0ff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.section-head {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.section-head:hover .label { color: var(--ink); }
+.chev { transition: transform 0.15s ease; }
+.chev[data-open='false'] { transform: rotate(-90deg); }
+
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.linkish {
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  cursor: pointer;
+}
+.linkish:hover { text-decoration: underline; }
+
+/* Call-to-action over an unfilled template slot. The canvas underneath shows the sample. */
+.slot-cta {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(22, 22, 26, 0.86);
+  color: #fff;
+  font-size: 11px;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+.slot-cta:hover { background: var(--accent); }
