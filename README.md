@@ -6,7 +6,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/hebertporto/appstore-forge/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/hebertporto/appstore-forge/actions/workflows/ci.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
   <img alt="Platform" src="https://img.shields.io/badge/platform-macOS%20(Apple%20Silicon)-lightgrey.svg">
 </p>
