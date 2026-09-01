@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  dmg:
+    name: Build macOS DMG
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm dist
+
+      # The build is deliberately unsigned and not notarized — see SECURITY.md.
+      # macOS will ask for confirmation on first launch of a downloaded DMG.
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release/*.dmg
+          generate_release_notes: true
+          body: |
+            Unsigned local build. On first launch macOS will ask you to confirm —
+            right-click the app and choose **Open**.

@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest a device, a look, a store size, or a change to how the app works.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Presets — devices, backgrounds, fonts, layouts, rhythms, templates — are usually
+        a few lines each and very welcome. See [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md#adding-presets).
+
+        Out of scope: accounts, cloud sync, uploading images anywhere, analytics, or
+        anything needing a server. The images never leaving the machine is the point.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do
+      description: The situation, not the solution — it often has a shorter answer than expected.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What you have in mind
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Anything you tried instead
