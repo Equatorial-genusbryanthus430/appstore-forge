@@ -1,4 +1,5 @@
 import type { TemplateSpec } from '../types'
+import { STEP } from './rhythms'
 
 /**
  * Complete looks. `settings` is applied over the defaults (so a template is a reset, not a
@@ -55,5 +56,42 @@ export const TEMPLATES: TemplateSpec[] = [
     ],
   },
 ]
+
+export const EDITORIAL: TemplateSpec = {
+  id: 'editorial',
+  label: 'Editorial',
+  description:
+    'A two-tile panorama opener, then a hero, an offset, a device-only breather and a tilt. Cool gradient, DM Sans, deep-blue frame.',
+  settings: {
+    background: { kind: 'gradient', from: '#e8f1ff', to: '#ffffff', angle: 160 },
+    frameColorId: 'deep-blue',
+    layout: 'hero',
+    positionId: 'center',
+    textColor: '#0e1b2a',
+    textAlign: 'center',
+    highlights: ['#bfdbfe', '#fde68a'],
+    fontId: 'dm-sans',
+    headlineScale: 1.25,
+    subheadScale: 0.9,
+    headlineTracking: -0.025,
+  },
+  rhythm: 'editorial',
+  variants: [
+    { ...STEP.panorama },
+    { ...STEP.hero },
+    { ...STEP.offset, background: { kind: 'gradient', from: '#f7faff', to: '#e8f1ff', angle: 200 } },
+    { ...STEP.minimal },
+    { ...STEP.tilt },
+  ],
+  samples: [
+    { headline: 'Your whole day, *one glance*', subhead: 'Calendar, tasks and notes, together at last.' },
+    { headline: 'Capture *anything*', subhead: 'Text, voice or a photo — it lands in the right place.' },
+    { headline: 'Plan the week in seconds', subhead: 'Drag, drop, done.' },
+    { headline: '', subhead: '' },
+    { headline: 'Works *offline*, syncs later', subhead: '' },
+  ],
+}
+
+TEMPLATES.push(EDITORIAL)
 
 export const getTemplateSpec = (id: string): TemplateSpec => TEMPLATES.find((t) => t.id === id) ?? TEMPLATES[0]

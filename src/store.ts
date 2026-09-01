@@ -1,8 +1,14 @@
 import { create } from 'zustand'
+import { getRhythm, rhythmStep } from './presets/rhythms'
 import { getTemplateSpec } from './presets/templates'
 import type { Screen, ScreenOverrides, Settings, TemplateSpec } from './types'
 
-export type Page = 'editor' | 'templates'
+/** The guided flow. Steps are navigation and status, never a gate — any step is one click away. */
+export type StepId = 'target' | 'look' | 'shots' | 'copy' | 'tune' | 'review'
+export const STEPS: StepId[] = ['target', 'look', 'shots', 'copy', 'tune', 'review']
+
+/** Cosmetic store-page details for the preview; nothing here reaches the exported pixels. */
+export type Listing = { name: string; subtitle: string; developer: string; category: string }
 
 let seq = 0
 const nextId = () => `s${++seq}`
@@ -57,8 +63,14 @@ type State = {
   settings: Settings
   /** last template applied; new screens pick up its variant cycle */
   templateId: string
-  page: Page
-  setPage: (page: Page) => void
+  /** the strip's rhythm: 'uniform', a built-in id, or 'template' when the template's own variants set it */
+  rhythmId: string
+  /** pin each screen's layout/arrangement/alignment to the rhythm's step for its index */
+  applyRhythm: (id: string) => void
+  step: StepId
+  setStep: (step: StepId) => void
+  listing: Listing
+  setListing: (patch: Partial<Listing>) => void
   format: 'png' | 'jpeg'
   applyTemplate: (id: string) => void
   /** fills empty slots in order, then appends */
@@ -92,9 +104,26 @@ export const useStore = create<State>((set) => ({
   images: {},
   settings: DEFAULT_SETTINGS,
   templateId: 'classic',
-  page: 'editor',
-  setPage: (page) => set({ page }),
+  rhythmId: 'uniform',
+  step: 'target',
+  setStep: (step) => set({ step }),
+  listing: { name: '', subtitle: '', developer: '', category: '' },
+  setListing: (patch) => set((state) => ({ listing: { ...state.listing, ...patch } })),
   format: 'png',
+
+  applyRhythm: (id) =>
+    set((state) => {
+      const rhythm = getRhythm(id)
+      return {
+        rhythmId: rhythm.id,
+        screens: state.screens.map((s, i) => {
+          // Only the composition keys move; a Notebook screen keeps its colours.
+          const { layout: _l, positionId: _p, textAlign: _t, ...rest } = s.overrides
+          const step = rhythmStep(rhythm, i)
+          return { ...s, overrides: step ? { ...rest, ...step } : rest }
+        }),
+      }
+    }),
 
   applyTemplate: (id) =>
     set((state) => {
@@ -112,6 +141,7 @@ export const useStore = create<State>((set) => ({
       }
       return {
         templateId: template.id,
+        rhythmId: template.rhythm ?? (template.variants?.length ? 'template' : 'uniform'),
         settings: templateSettings(template, state.settings),
         screens,
         selectedId: screens.some((s) => s.id === state.selectedId) ? state.selectedId : null,
@@ -137,13 +167,14 @@ export const useStore = create<State>((set) => ({
           screens[slot] = { ...screens[slot], imageId: id }
           slot = screens.findIndex((s, i) => i > slot && s.imageId === null)
         } else {
+          // Continue the template's variant cycle and the rhythm so a later drop matches.
+          const step = rhythmStep(getRhythm(state.rhythmId), screens.length)
           screens.push({
             id,
             headline: file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' '),
             subhead: '',
             imageId: id,
-            // Continue the template's variant cycle so a later drop matches the earlier ones.
-            overrides: variantFor(template, screens.length),
+            overrides: { ...variantFor(template, screens.length), ...(step ?? {}) },
           })
         }
       }

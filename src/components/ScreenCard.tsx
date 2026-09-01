@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { sceneSpan } from '../render/scene'
 import { useStore } from '../store'
 import type { Screen } from '../types'
 import { ScreenPreview } from './ScreenPreview'
@@ -11,9 +12,11 @@ type Props = {
   height: number
   /** true when this card is one of a set template's fixed slots */
   isSlot: boolean
+  /** preview + selection only — for the Fine-tune step, where the panel does the editing */
+  compact?: boolean
 }
 
-export function ScreenCard({ screen, index, total, width, height, isSlot }: Props) {
+export function ScreenCard({ screen, index, total, width, height, isSlot, compact = false }: Props) {
   const updateScreen = useStore((s) => s.updateScreen)
   const removeScreen = useStore((s) => s.removeScreen)
   const clearImage = useStore((s) => s.clearImage)
@@ -22,6 +25,7 @@ export function ScreenCard({ screen, index, total, width, height, isSlot }: Prop
   const selectedId = useStore((s) => s.selectedId)
   const selectScreen = useStore((s) => s.selectScreen)
   const fileRef = useRef<HTMLInputElement>(null)
+  const span = useStore((s) => sceneSpan(screen, s.settings))
 
   const selected = selectedId === screen.id
   const overrides = Object.keys(screen.overrides).length
@@ -34,9 +38,12 @@ export function ScreenCard({ screen, index, total, width, height, isSlot }: Prop
         borderColor: selected ? 'var(--accent)' : 'var(--line)',
         boxShadow: selected ? '0 0 0 3px rgba(30,111,245,0.15)' : 'none',
         background: 'var(--panel)',
-        width: width + 24,
+        width: width * span + 24,
       }}
-      onClick={() => selectScreen(screen.id)}
+      onClick={(e) => {
+        e.stopPropagation()
+        selectScreen(screen.id)
+      }}
     >
       <input
         ref={fileRef}
@@ -66,52 +73,64 @@ export function ScreenCard({ screen, index, total, width, height, isSlot }: Prop
         )}
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <input
-          className="field"
-          value={screen.headline}
-          placeholder="Headline — *stars* highlight a word"
-          onChange={(e) => updateScreen(screen.id, { headline: e.target.value })}
-        />
-        <input
-          className="field"
-          value={screen.subhead}
-          placeholder="Subtitle (optional)"
-          onChange={(e) => updateScreen(screen.id, { subhead: e.target.value })}
-        />
-      </div>
+      {!compact && (
+        <div className="flex flex-col gap-1.5">
+          <input
+            className="field"
+            value={screen.headline}
+            placeholder="Headline — *stars* highlight a word"
+            onChange={(e) => updateScreen(screen.id, { headline: e.target.value })}
+          />
+          <input
+            className="field"
+            value={screen.subhead}
+            placeholder="Subtitle (optional)"
+            onChange={(e) => updateScreen(screen.id, { subhead: e.target.value })}
+          />
+        </div>
+      )}
 
       <div className="flex items-center justify-between" style={{ color: 'var(--muted)' }}>
         <span className="flex items-center gap-1.5 text-[11px] tabular-nums">
           {index + 1} / {total}
+          {span > 1 && <span title="Exports as two store tiles">· 2 tiles</span>}
           {overrides > 0 && (
-            <span className="dot" title={`${overrides} setting${overrides === 1 ? '' : 's'} set for this screen`} />
+            <span
+              className="dot"
+              title={`${overrides} setting${overrides === 1 ? '' : 's'} set for this screen`}
+            />
           )}
         </span>
-        <div className="flex gap-1">
-          <button className="seg" disabled={index === 0} onClick={() => moveScreen(screen.id, -1)}>
-            ←
-          </button>
-          <button className="seg" disabled={index === total - 1} onClick={() => moveScreen(screen.id, 1)}>
-            →
-          </button>
-          {!empty && (
-            <button className="seg" onClick={() => fileRef.current?.click()}>
-              Replace
+        {compact ? (
+          <span className="text-[11px]">
+            {selected ? 'Editing this screen' : 'Click to edit only this one'}
+          </span>
+        ) : (
+          <div className="flex gap-1">
+            <button className="seg" disabled={index === 0} onClick={() => moveScreen(screen.id, -1)}>
+              ←
             </button>
-          )}
-          {isSlot ? (
-            !empty && (
-              <button className="seg" onClick={() => clearImage(screen.id)}>
-                Clear
+            <button className="seg" disabled={index === total - 1} onClick={() => moveScreen(screen.id, 1)}>
+              →
+            </button>
+            {!empty && (
+              <button className="seg" onClick={() => fileRef.current?.click()}>
+                Replace
               </button>
-            )
-          ) : (
-            <button className="seg" onClick={() => removeScreen(screen.id)}>
-              Remove
-            </button>
-          )}
-        </div>
+            )}
+            {isSlot ? (
+              !empty && (
+                <button className="seg" onClick={() => clearImage(screen.id)}>
+                  Clear
+                </button>
+              )
+            ) : (
+              <button className="seg" onClick={() => removeScreen(screen.id)}>
+                Remove
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

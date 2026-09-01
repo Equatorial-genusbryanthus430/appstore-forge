@@ -32,13 +32,13 @@ export function drawBackground(ctx: CanvasRenderingContext2D, w: number, h: numb
  * Rounded card behind the device band. Sits a little above the device and, when the layout
  * bleeds the device off the bottom, runs off-canvas too so no bottom corners show.
  */
-function drawBackdrop(ctx: CanvasRenderingContext2D, w: number, h: number, layout: Layout, color: string) {
-  const r = w * 0.075
+function drawBackdrop(ctx: CanvasRenderingContext2D, W: number, tileW: number, h: number, layout: Layout, color: string) {
+  const r = tileW * 0.075
   const top = h * layout.device.top - h * 0.05
   const bottom = layout.device.bottom > 1 ? h + r : Math.min(h + r, h * layout.device.bottom + h * 0.05)
   ctx.fillStyle = color
   ctx.beginPath()
-  ctx.roundRect(w * 0.045, top, w * 0.91, bottom - top, r)
+  ctx.roundRect(tileW * 0.045, top, W - tileW * 0.09, bottom - top, r)
   ctx.fill()
 }
 
@@ -185,7 +185,8 @@ function drawLine(
 
 function drawTextBlock(
   ctx: CanvasRenderingContext2D,
-  w: number,
+  W: number,
+  tileW: number,
   h: number,
   layout: Layout,
   screen: Screen,
@@ -193,7 +194,9 @@ function drawTextBlock(
 ) {
   if (!layout.text || (!screen.headline && !screen.subhead)) return
 
-  const maxWidth = w * (1 - layout.padX * 2)
+  // The text box: the tile minus padding by default, or wherever the layout puts it.
+  const boxLeft = layout.text.left !== undefined ? W * layout.text.left : tileW * layout.padX
+  const maxWidth = layout.text.width !== undefined ? W * layout.text.width : tileW * (1 - layout.padX * 2)
   const bandTop = layout.text.top * h
   const bandHeight = layout.text.height * h
   const { headSize, subSize, headLines, subLines, gap } = layoutText(
@@ -204,7 +207,7 @@ function drawTextBlock(
     headLines.length * headSize * HEAD_LH + (subLines.length ? gap + subLines.length * subSize * SUB_LH : 0)
   let y = bandTop + (bandHeight - total) / 2
   const startX = (lineWidth: number) =>
-    settings.textAlign === 'left' ? w * layout.padX : (w - lineWidth) / 2
+    settings.textAlign === 'left' ? boxLeft : boxLeft + (maxWidth - lineWidth) / 2
 
   ctx.save()
   ctx.textAlign = 'left'
@@ -234,6 +237,55 @@ function drawTextBlock(
  */
 export type SceneSources = Partial<Record<PlacementSource, CanvasImageSource | null>>
 
+export type DeviceBox = { box: Box; source: PlacementSource; angle: number }
+
+/**
+ * Where every device frame of a composition sits, back to front. `w`/`h` are one store tile.
+ * The single source of device geometry: the renderer draws these boxes and the rhythm glyphs
+ * sketch them, so a picker can never show a composition the export does not produce.
+ */
+export function composeDevices(
+  layout: Layout,
+  positionId: string,
+  w: number,
+  h: number,
+  aspect: number,
+  deviceScale: number,
+  tilt: number,
+): DeviceBox[] {
+  const W = w * layout.span
+  const slot: Box = {
+    x: w * layout.padX,
+    y: h * layout.device.top,
+    w: W - w * layout.padX * 2,
+    h: h * (layout.device.bottom - layout.device.top),
+  }
+  // Fit one frame inside the slot, preserving aspect — or take the layout's fixed width — and
+  // scale each placement from there.
+  const fitW = layout.device.width !== undefined ? w * layout.device.width : Math.min(slot.w, slot.h * aspect)
+  const baseW = fitW * deviceScale
+  const cx = layout.device.cx !== undefined ? W * layout.device.cx : slot.x + slot.w / 2
+  const cy = layout.device.cy !== undefined ? h * layout.device.cy : slot.y + slot.h / 2
+
+  return getPosition(positionId).placements.map((placement) => {
+    const fw = baseW * placement.scale
+    const fh = fw / aspect
+    return {
+      box: { x: cx + placement.dx * W - fw / 2, y: cy + placement.dy * h - fh / 2, w: fw, h: fh },
+      source: placement.source,
+      angle: placement.rotate + tilt,
+    }
+  })
+}
+
+/** How many store tiles a screen's composition covers — the canvas must be `span` tiles wide. */
+export const sceneSpan = (screen: Screen, settings: Settings): 1 | 2 =>
+  getLayout(effectiveSettings(screen, settings).layout).span
+
+/**
+ * `w`/`h` are the store *tile* size. A span-2 layout draws a composition `2w` wide; the caller
+ * sizes the canvas with `sceneSpan` and, on export, slices it into tiles.
+ */
 export function renderScene(
   ctx: CanvasRenderingContext2D,
   w: number,
@@ -244,42 +296,21 @@ export function renderScene(
 ) {
   // One place resolves inheritance, so preview and export can never disagree about it.
   settings = effectiveSettings(screen, settings)
-  ctx.clearRect(0, 0, w, h)
-  drawBackground(ctx, w, h, settings.background)
-
   const layout = getLayout(settings.layout)
-  if (settings.backdropColor) drawBackdrop(ctx, w, h, layout, settings.backdropColor)
-  drawTextBlock(ctx, w, h, layout, screen, settings)
+  const W = w * layout.span
+  ctx.clearRect(0, 0, W, h)
+  drawBackground(ctx, W, h, settings.background)
+
+  if (settings.backdropColor) drawBackdrop(ctx, W, w, h, layout, settings.backdropColor)
+  drawTextBlock(ctx, W, w, h, layout, screen, settings)
 
   const device = getDevice(settings.deviceId)
   const color = getFrameColor(settings.frameColorId)
-  const aspect = frameAspect(device)
 
-  const slot: Box = {
-    x: w * layout.padX,
-    y: h * layout.device.top,
-    w: w * (1 - layout.padX * 2),
-    h: h * (layout.device.bottom - layout.device.top),
-  }
-
-  // Fit one frame inside the slot, preserving aspect; each placement scales from there.
-  const baseW = Math.min(slot.w, slot.h * aspect) * settings.deviceScale
-  const cx = slot.x + slot.w / 2
-  const cy = slot.y + slot.h / 2
-
-  for (const placement of getPosition(settings.positionId).placements) {
-    const fw = baseW * placement.scale
-    const fh = fw / aspect
-    const box: Box = {
-      x: cx + placement.dx * w - fw / 2,
-      y: cy + placement.dy * h - fh / 2,
-      w: fw,
-      h: fh,
-    }
+  for (const { box, source, angle } of composeDevices(layout, settings.positionId, w, h, frameAspect(device), settings.deviceScale, settings.tilt)) {
     // A multi-device arrangement falls back to the current screenshot when there is no
     // neighbour, so a single-screen project still renders every frame.
-    const img = sources[placement.source] ?? sources.self ?? null
-    const angle = placement.rotate + settings.tilt
+    const img = sources[source] ?? sources.self ?? null
 
     ctx.save()
     if (angle !== 0) {

@@ -21,9 +21,10 @@ option.
 | **Settings** | The global look: background, device, layout, arrangement, type, tilt, scale, export size. |
 | **Override** | A setting pinned on one Screen. Absent key = inherit from Settings. |
 | **Device frame** | The phone/tablet body drawn around a source screenshot. Pure geometry, no bitmaps. |
-| **Layout** | Where the text band and device band sit vertically. |
+| **Layout** | One composition: the text box, the device band (or a fixed device width and centre), and its **span** — how many store tiles it covers. A span-2 layout (panorama) is drawn once at double width and sliced into two PNGs on export. |
 | **Arrangement** (position) | How many device frames appear and where. May pull in neighbouring Screens. |
 | **Template** | A complete look: a Settings preset plus per-screen **variants**. A template *with* variants is a **set template**: it has a fixed number of **slots** (one per variant) that are laid out the moment it is chosen. A template without variants (Classic) is **freeform** — any number of screens. |
+| **Rhythm** | The strip's sequence of compositions (layout + arrangement + alignment per tile), independent of the look — Goldie's "template". `applyRhythm` pins those three keys as overrides by screen index and leaves colours alone. `uniform` clears them. |
 | **Slot** | A Screen created by a set template. `imageId: null` while unfilled; it previews with the drawn placeholder and carries the template's sample copy. Export is gated until every slot is filled. |
 | **Highlight** | A marker band drawn behind `*starred*` words in a headline. Spans cycle through `settings.highlights`. |
 | **Backdrop** | A rounded card drawn behind the device band, between background and text. |
@@ -62,19 +63,30 @@ electron/main.cjs     window, native folder picker, file writes, Finder reveal
 electron/preload.cjs  context-isolated bridge → window.desktop
 src/render/scene.ts   THE renderer: background → text → device placements
 src/render/frames.ts  device body, bezel, screen clip, Dynamic Island / punch-hole
-src/presets/          backgrounds, devices, fonts, layouts, templates, positions, sizes
+src/presets/          backgrounds, devices, fonts, layouts, rhythms, templates, positions, sizes
+src/render/placeholder.ts  drawn stand-in screenshot for template thumbnails
+src/lib/settings.ts   override resolution + section grouping
+src/lib/export.ts     full-size render → native save, or zip in a browser
+src/store.ts          zustand: screens, decoded images, settings, selection, step
+src/lib/progress.ts   readiness(): the one reading of "how far along is the set" — rail, footer and review all use it
+src/components/Rail.tsx          the guided flow: six steps with status; navigation, never a gate
+src/components/Footer.tsx        status line + the step's one primary action (Next / Export)
+src/components/steps/*           Target → Look → Screenshots → Copy → Fine-tune → Review & export
+src/components/TunePanel.tsx     the full control set, scoped to all screens or the selected one
+src/components/StorePreview.tsx  the set inside a mock App Store product page (Review step)
 src/render/placeholder.ts  drawn stand-in screenshot for template thumbnails
 src/lib/settings.ts   override resolution + section grouping
 src/lib/export.ts     full-size render → native save, or zip in a browser
 src/store.ts          zustand: screens, decoded images, settings, selection, page
-src/components/TopBar.tsx        window drag strip + Templates / Editor tabs
-src/components/TemplatesPage.tsx gallery of looks; choosing one applies it and opens the editor
 ```
 
 ### The one decision everything rests on
 
 `renderScene(ctx, w, h, screen, settings, sources)` draws the preview at ~230px
 and the export at 1320×2868. Same function, same call, only `w`/`h` differ.
+`w`/`h` are one store *tile*; a span-2 layout draws `2w` wide, and the caller
+sizes the canvas with `sceneSpan(screen, settings)` — the only other place that
+resolves overrides, and it delegates to `effectiveSettings`.
 
 There is deliberately **no second rendering path**. Any feature added as
 CSS-in-the-preview would immediately drift from the export and reintroduce the
@@ -87,6 +99,16 @@ A device is a geometric description — screen aspect, bezel fraction, corner
 radius fraction, notch kind — rendered with canvas primitives. No bitmap assets
 to scale or license, and adding a device is a one-line object in
 `presets/devices.ts`.
+
+### The flow is a checklist, not a wizard
+
+The six steps follow the order the decisions depend on (size shapes the canvas,
+the look shapes the slots, the slots take screenshots, copy sits on them). But
+nothing is locked: every step is clickable at any time, files can be dropped on
+any step, headlines are editable in both Screenshots and Copy, and Export is in
+the footer on every step — disabled only while a slot is empty, with the reason
+as its label. Colour is used for status only: green = done, amber = needs
+attention, the accent = the current step and the primary action.
 
 ## Store constraints worth knowing
 

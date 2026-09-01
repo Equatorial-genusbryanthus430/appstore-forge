@@ -24,6 +24,46 @@ export const POSITIONS: Position[] = [
     placements: [{ source: 'self', dx: 0.15, dy: 0.01, scale: 1.06, rotate: -4 }],
   },
   {
+    id: 'right',
+    label: 'Pushed right',
+    placements: [{ source: 'self', dx: 0.12, dy: 0.02, scale: 1, rotate: 0 }],
+  },
+  {
+    id: 'lean',
+    label: 'Lean',
+    // Positive = clockwise on canvas: the top swings right, away from left-aligned copy.
+    placements: [{ source: 'self', dx: 0, dy: 0, scale: 1, rotate: 10 }],
+  },
+  {
+    id: 'corner',
+    label: 'Corner',
+    placements: [{ source: 'self', dx: 0.14, dy: 0.03, scale: 1, rotate: 10 }],
+  },
+  {
+    id: 'wings',
+    label: 'Wings',
+    placements: [
+      { source: 'next', dx: 0.23, dy: 0, scale: 1, rotate: -6 },
+      { source: 'self', dx: -0.23, dy: 0, scale: 1, rotate: 6 },
+    ],
+  },
+  {
+    id: 'duo',
+    label: 'Duo',
+    placements: [
+      { source: 'next', dx: -0.18, dy: -0.05, scale: 0.88, rotate: 0 },
+      { source: 'self', dx: 0.14, dy: 0.05, scale: 1, rotate: 0 },
+    ],
+  },
+  {
+    id: 'duo-tilt',
+    label: 'Duo tilt',
+    placements: [
+      { source: 'next', dx: -0.18, dy: -0.06, scale: 0.9, rotate: -6 },
+      { source: 'self', dx: 0.16, dy: 0.06, scale: 1, rotate: -6 },
+    ],
+  },
+  {
     id: 'pair',
     label: 'Pair',
     placements: [

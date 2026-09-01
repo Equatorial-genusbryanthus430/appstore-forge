@@ -1,5 +1,5 @@
 import { zipSync } from 'fflate'
-import { renderScene, stripMarkup } from '../render/scene'
+import { renderScene, sceneSpan, stripMarkup } from '../render/scene'
 import { getSize } from '../presets/sizes'
 import type { Screen, Settings } from '../types'
 
@@ -40,10 +40,12 @@ export async function renderAll(
 ) {
   const size = getSize(settings.sizeId)
   const canvas = document.createElement('canvas')
-  canvas.width = size.w
   canvas.height = size.h
-  const ctx = canvas.getContext('2d', { alpha: false })
-  if (!ctx) throw new Error('2D canvas unavailable')
+  const tile = document.createElement('canvas')
+  tile.width = size.w
+  tile.height = size.h
+  const tileCtx = tile.getContext('2d', { alpha: false })
+  if (!tileCtx) throw new Error('2D canvas unavailable')
 
   // Same neighbour-wrapping the preview uses, so multi-device arrangements export identically.
   const imageAt = (i: number) => {
@@ -52,17 +54,28 @@ export async function renderAll(
   }
 
   const files: { name: string; data: Uint8Array }[] = []
+  let tileIndex = 0
   for (const [i, screen] of screens.entries()) {
+    // A panorama is drawn once at span × width and sliced into store tiles, numbered in
+    // store order so the files upload as consecutive slots.
+    const span = sceneSpan(screen, settings)
+    canvas.width = size.w * span
+    const ctx = canvas.getContext('2d', { alpha: false })
+    if (!ctx) throw new Error('2D canvas unavailable')
     renderScene(ctx, size.w, size.h, screen, settings, {
       self: imageAt(i),
       next: imageAt(i + 1),
       prev: imageAt(i - 1),
     })
-    const blob = await toBlob(canvas, format)
-    files.push({
-      name: `${String(i + 1).padStart(2, '0')}-${slug(stripMarkup(screen.headline), 'screen')}.${format === 'png' ? 'png' : 'jpg'}`,
-      data: new Uint8Array(await blob.arrayBuffer()),
-    })
+    for (let part = 0; part < span; part++) {
+      tileCtx.drawImage(canvas, -part * size.w, 0)
+      const blob = await toBlob(tile, format)
+      const name = slug(stripMarkup(screen.headline), 'screen') + (span > 1 ? `-${part + 1}` : '')
+      files.push({
+        name: `${String(++tileIndex).padStart(2, '0')}-${name}.${format === 'png' ? 'png' : 'jpg'}`,
+        data: new Uint8Array(await blob.arrayBuffer()),
+      })
+    }
   }
   return { files, folder: `store-screenshots-${size.id}` }
 }

@@ -3,7 +3,6 @@ import { GRADIENT_PRESETS, SOLID_PRESETS } from '../presets/backgrounds'
 import { DEVICES, DEVICE_GROUPS, FRAME_COLORS } from '../presets/devices'
 import { POSITIONS } from '../presets/positions'
 import { LAYOUTS } from '../presets/layouts'
-import { EXPORT_SIZES } from '../presets/sizes'
 import { FONTS, getFont } from '../presets/fonts'
 import { SECTION_KEYS, effectiveSettings } from '../lib/settings'
 import { useStore } from '../store'
@@ -84,7 +83,11 @@ function Section({
   )
 }
 
-export function Sidebar({ onExport, exporting }: { onExport: () => void; exporting: boolean }) {
+/**
+ * Fine-tune controls. Reads the resolved value for the selected screen (or the global set) and
+ * writes back to that scope; each section shows a dot when the selected screen overrides it.
+ */
+export function TunePanel() {
   const global = useStore((s) => s.settings)
   const setSettings = useStore((s) => s.setSettings)
   const screens = useStore((s) => s.screens)
@@ -93,11 +96,8 @@ export function Sidebar({ onExport, exporting }: { onExport: () => void; exporti
   const setOverride = useStore((s) => s.setOverride)
   const clearOverrides = useStore((s) => s.clearOverrides)
   const clearAllOverrides = useStore((s) => s.clearAllOverrides)
-  const format = useStore((s) => s.format)
-  const setFormat = useStore((s) => s.setFormat)
   const [tab, setTab] = useState<'presets' | 'custom'>('presets')
 
-  const missing = screens.filter((s) => s.imageId === null).length
   const selected = screens.find((s) => s.id === selectedId) ?? null
   const selectedIndex = screens.findIndex((s) => s.id === selectedId)
   const overrideCount = screens.filter((s) => Object.keys(s.overrides).length > 0).length
@@ -116,8 +116,8 @@ export function Sidebar({ onExport, exporting }: { onExport: () => void; exporti
 
   return (
     <aside
-      className="flex h-full w-[300px] shrink-0 flex-col overflow-y-auto"
-      style={{ background: 'var(--panel)', borderRight: '1px solid var(--line)' }}
+      className="flex h-full w-[300px] shrink-0 flex-col overflow-y-auto rounded-2xl border"
+      style={{ background: 'var(--panel)', borderColor: 'var(--line)' }}
     >
       <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid var(--line)' }}>
         <div className="flex gap-1 rounded-lg p-1" style={{ background: 'var(--shell)' }}>
@@ -354,44 +354,6 @@ export function Sidebar({ onExport, exporting }: { onExport: () => void; exporti
         </Row>
       </Section>
 
-      <Section id="export" title="Export">
-        <select className="field" value={global.sizeId} onChange={(e) => setSettings({ sizeId: e.target.value })}>
-          {EXPORT_SIZES.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.store} — {s.label} ({s.w}×{s.h})
-            </option>
-          ))}
-        </select>
-        <div className="flex gap-1 rounded-lg p-1" style={{ background: 'var(--shell)' }}>
-          <button className="seg" data-active={format === 'png'} onClick={() => setFormat('png')}>
-            PNG
-          </button>
-          <button className="seg" data-active={format === 'jpeg'} onClick={() => setFormat('jpeg')}>
-            JPEG
-          </button>
-        </div>
-        {format === 'png' && (
-          <p className="text-[11px] leading-snug" style={{ color: 'var(--muted)' }}>
-            App Store Connect rejects images carrying an alpha channel. If a PNG upload is refused,
-            re-export as JPEG.
-          </p>
-        )}
-      </Section>
-
-      <div className="mt-auto p-4">
-        <button
-          className="w-full rounded-lg py-2.5 text-[13px] font-semibold text-white disabled:opacity-40"
-          style={{ background: 'var(--accent)' }}
-          disabled={!screens.length || exporting || missing > 0}
-          onClick={onExport}
-        >
-          {exporting
-            ? 'Exporting…'
-            : missing > 0
-              ? `Add ${missing} more screenshot${missing === 1 ? '' : 's'} to export`
-              : `Export ${screens.length || ''} screenshot${screens.length === 1 ? '' : 's'}`}
-        </button>
-      </div>
     </aside>
   )
 }

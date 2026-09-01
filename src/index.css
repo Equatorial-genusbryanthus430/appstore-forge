@@ -76,40 +76,6 @@ input[type='color'] {
   border: 1px solid var(--line); border-radius: 7px; background: #fff; cursor: pointer;
 }
 
-/* The packaged app uses a hidden-inset title bar, so the top bar doubles as the window
-   drag strip and has to clear the traffic lights on the left. */
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  height: 52px;
-  padding: 0 16px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
-}
-body.is-desktop .topbar {
-  padding-left: 84px;
-  -webkit-app-region: drag;
-}
-body.is-desktop .topbar button {
-  -webkit-app-region: no-drag;
-}
-.tab {
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  border-radius: 7px;
-  border: none;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-}
-.tab[data-active='true'] {
-  background: #fff;
-  color: var(--ink);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-}
 .template-card {
   display: flex;
   flex-direction: column;
@@ -209,3 +175,258 @@ body.is-desktop .topbar button {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
 }
 .slot-cta:hover { background: var(--accent); }
+
+/* Where a span-2 composition is cut into store tiles. UI chrome only, never drawn into the export. */
+.seam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px dashed rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+
+/* Mock App Store product page around the strip. */
+.store {
+  max-width: 1120px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 28px 32px 32px;
+}
+.store-head { display: flex; gap: 20px; align-items: flex-start; }
+.store-icon {
+  width: 118px; height: 118px; flex-shrink: 0; border-radius: 26px;
+  background: linear-gradient(145deg, #1e6ff5, #7c3aed);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+}
+.store-name, .store-sub {
+  display: block; width: 100%; border: none; background: transparent; outline: none; padding: 0;
+  color: var(--ink);
+}
+.store-name { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.store-sub { margin-top: 2px; font-size: 14px; color: var(--muted); }
+.store-name::placeholder, .store-sub::placeholder { color: #b8b8be; }
+.store-get {
+  display: inline-block; border-radius: 999px; background: var(--accent); color: #fff;
+  font-size: 12px; font-weight: 700; padding: 5px 20px;
+}
+.store-stats {
+  display: flex; gap: 0; margin: 22px 0 6px; padding: 12px 0;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.store-stat { flex: 1; text-align: center; }
+.store-stat + .store-stat { border-left: 1px solid var(--line); }
+.store-stat-big { font-size: 17px; font-weight: 700; color: var(--muted); }
+.store-stat-mid { font-size: 9px; letter-spacing: 1px; color: var(--muted); }
+.store-stat-small { margin-top: 1px; font-size: 10px; color: var(--muted); }
+.store-section { margin: 18px 0 10px; font-size: 16px; font-weight: 700; }
+
+/* Rhythm dropdown: one glyph strip per option. */
+.rhythm-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  width: 320px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.14);
+}
+.rhythm-option {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: var(--ink);
+}
+.rhythm-option:hover { background: var(--shell); }
+.rhythm-option[data-active='true'] { background: rgba(30, 111, 245, 0.07); }
+
+/* ---- Guided flow shell ---- */
+:root {
+  --ok: #15803d;
+  --warn: #b45309;
+  --ok-bg: rgba(21, 128, 61, 0.1);
+  --warn-bg: rgba(180, 83, 9, 0.12);
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  width: 224px;
+  flex-shrink: 0;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+}
+/* The rail head is the window drag strip in the packaged app and clears the traffic lights. */
+.rail-head { padding: 18px 16px 14px; }
+body.is-desktop .rail-head { padding-top: 44px; -webkit-app-region: drag; }
+
+.rail-step {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.rail-step:hover { background: var(--shell); }
+.rail-step[data-active='true'] { background: rgba(30, 111, 245, 0.08); }
+.rail-num {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--shell);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+.rail-step[data-status='done'] .rail-num { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+.rail-step[data-status='attention'] .rail-num { background: var(--warn-bg); color: var(--warn); border-color: transparent; }
+.rail-step[data-active='true'] .rail-num { box-shadow: 0 0 0 2px rgba(30, 111, 245, 0.35); }
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 24px;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+}
+.btn {
+  padding: 8px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+}
+.btn-primary {
+  padding: 8px 18px;
+  border-radius: 9px;
+  border: none;
+  background: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+}
+.btn-primary:disabled { opacity: 0.45; cursor: default; }
+
+.option-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+.option-card:hover { border-color: #c9c9d0; }
+.option-card[data-active='true'] { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(30, 111, 245, 0.14); }
+
+.pill {
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: rgba(30, 111, 245, 0.1);
+}
+
+.tip {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+  max-width: 760px;
+}
+.tip-mark {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  font-style: italic;
+  background: rgba(30, 111, 245, 0.1);
+  color: var(--accent);
+}
+
+.copy-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.count {
+  min-width: 28px;
+  text-align: right;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.count[data-over='true'] { color: var(--warn); font-weight: 600; }
+
+.checklist { display: flex; flex-direction: column; gap: 6px; max-width: 760px; }
+.checklist li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+.check-mark {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+}
+.checklist li[data-ok='true'] .check-mark { background: var(--ok-bg); color: var(--ok); }
+.checklist li[data-ok='false'] .check-mark { background: var(--warn-bg); color: var(--warn); }
+.checklist li[data-ok='false'] { border-color: rgba(180, 83, 9, 0.35); }

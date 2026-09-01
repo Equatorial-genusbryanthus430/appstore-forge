@@ -47,15 +47,38 @@ export type Position = {
   placements: Placement[]
 }
 
-export type LayoutId = 'text-top' | 'text-bottom' | 'bleed' | 'editorial' | 'centered'
+export type LayoutId =
+  | 'text-top'
+  | 'text-bottom'
+  | 'bleed'
+  | 'editorial'
+  | 'hero'
+  | 'duo'
+  | 'panorama'
+  | 'panorama-duo'
+  | 'centered'
 
+/**
+ * A layout is one composition. Fractions are of the *tile* height for vertical values and of
+ * the *composition* width (tile width × span) for horizontal ones, so a panorama can put its
+ * copy on the left tile and its device across the seam.
+ */
 export type Layout = {
   id: LayoutId
   label: string
-  /** vertical band for the text block, as fractions of canvas height */
-  text: { top: number; height: number } | null
-  /** vertical band the device is fitted into; bottom may exceed 1 to bleed off-canvas */
-  device: { top: number; bottom: number }
+  /** store tiles this composition covers; a span-2 layout is sliced into two PNGs on export */
+  span: 1 | 2
+  /**
+   * Band for the text block. `left`/`width` position the box across the composition; absent,
+   * the box is the tile minus `padX` on both sides.
+   */
+  text: { top: number; height: number; left?: number; width?: number } | null
+  /**
+   * Band the device is fitted into; bottom may exceed 1 to bleed off-canvas. `width` fixes the
+   * frame width as a fraction of the tile width instead of fitting the band; `cx`/`cy` move the
+   * centre (fractions of composition width / tile height) off the band centre.
+   */
+  device: { top: number; bottom: number; width?: number; cx?: number; cy?: number }
   padX: number
 }
 
@@ -82,6 +105,12 @@ export type OverridableKey = Exclude<keyof Settings, 'sizeId'>
 export type ScreenOverrides = Partial<Pick<Settings, OverridableKey>>
 
 export type TextAlign = 'center' | 'left'
+
+/** One step of a rhythm: which composition a tile takes. Applied as overrides by screen index. */
+export type RhythmStep = { layout: LayoutId; positionId: string; textAlign?: TextAlign }
+
+/** The strip's rhythm, independent of the look: Goldie's template idea. Empty steps = uniform. */
+export type Rhythm = { id: string; label: string; description: string; steps: RhythmStep[] }
 
 export type Settings = {
   background: Background
@@ -120,6 +149,8 @@ export type TemplateSpec = {
   settings: Partial<Omit<Settings, 'sizeId' | 'deviceId'>>
   /** overrides pinned on screen `i` are `variants[i % variants.length]` */
   variants?: ScreenOverrides[]
+  /** the rhythm the variants follow, for the picker; absent = the template's own */
+  rhythm?: string
   /** sample copy for the gallery thumbnail (first) and the empty editor (one per card) */
   samples: { headline: string; subhead: string }[]
 }

@@ -20,13 +20,33 @@ thicker — or the picker feels fake.
    unless it must be global (like `sizeId`, excluded via `OverridableKey`).
 2. Default it in `DEFAULT_SETTINGS` in `store.ts`.
 3. Consume it in `renderScene`.
-4. Add the control to `Sidebar.tsx` using `settings.<key>` to read and `put({...})`
-   to write — `put` routes to the selected screen or the global scope.
+4. Add the control to `TunePanel.tsx` using `settings.<key>` to read and `put({...})`
+   to write — `put` routes to the selected screen or the global scope. If the
+   setting is a first-order decision (like store size), it belongs in a step
+   instead (`components/steps/`).
 5. List the key in `SECTION_KEYS` in `lib/settings.ts` so the section's override
    dot and "Reset to all screens" link know about it.
 
 Do not add a bespoke per-screen field. That was the original `tilt: number | null`
 mistake; overrides replaced it.
+
+## Adding a layout
+
+`src/presets/layouts.ts`. Vertical values are fractions of the tile height;
+horizontal ones of the *composition* width (`tile × span`). Leave `device.width`
+out to fit the band (the classic behaviour); set it, plus `cx`/`cy`, for a
+Goldie-style absolute placement (`hero`, `panorama`). `text.left`/`text.width`
+put the copy somewhere other than the padded tile — a panorama keeps it on the
+left tile. Nothing else needs touching: preview, gallery strips, the store page
+and export all read `span` from the layout.
+
+## Adding a rhythm
+
+`src/presets/rhythms.ts` — a list of `STEP`s (layout + arrangement + alignment).
+The picker's glyph is drawn from `composeDevices`, the same geometry the
+renderer uses, so a new step needs no artwork. A set template whose variants
+follow a built-in rhythm names it in `rhythm`; otherwise its own compositions
+appear in the picker as "<Template> (template)".
 
 ## Adding an arrangement
 
@@ -53,13 +73,20 @@ is the gallery thumbnail), so give one sample per variant. Use `*stars*` in them
 if the highlight colours are part of its character. Omit `variants` for a
 freeform template.
 
+## Adding a step or a readiness rule
+
+The rail, footer and Review step all read `readiness()` in `lib/progress.ts`;
+add a rule there and every surface picks it up. A new step is a `StepId` in
+`store.ts`, a component in `components/steps/`, a title in `Rail.tsx` and a
+"Next" label in `Footer.tsx`. Keep it navigable — no step may block another.
+
 ## Automation hooks
 
 Exposed in packaged builds too — this is a local tool with no untrusted content,
 and scripting it is a feature.
 
 ```js
-window.__store                  // the zustand store
+window.__store                  // the zustand store; __store.getState().setStep('review') jumps steps
 window.__renderExport(screens, settings, images, 'png')
                                 // the real export renderer, no native dialog
 window.desktop                  // { platform, chooseFolder, writeFiles, revealPath }
