@@ -48,12 +48,23 @@ export function ShotsStep({ onBrowse, dragging }: { onBrowse: () => void; draggi
       {r.total > 0 && (
         <div className="flex flex-wrap gap-5" onClick={() => selectScreen(null)}>
           {screens.map((screen, i) => (
-            <ScreenCard key={screen.id} screen={screen} index={i} total={screens.length} isSlot={i < slots} width={PREVIEW_WIDTH} height={previewHeight} />
+            <ScreenCard
+              key={screen.id}
+              screen={screen}
+              index={i}
+              total={screens.length}
+              isSlot={i < slots}
+              width={PREVIEW_WIDTH}
+              height={previewHeight}
+            />
           ))}
         </div>
       )}
 
-      <Tip>Take captures at the device's native resolution with a clean status bar (9:41, full signal). They are fitted top-anchored, so the status bar stays and the bottom crops.</Tip>
+      <Tip>
+        Take captures at the device's native resolution with a clean status bar (9:41, full signal). They are
+        fitted top-anchored, so the status bar stays and the bottom crops.
+      </Tip>
     </StepFrame>
   )
 }

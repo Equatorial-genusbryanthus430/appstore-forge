@@ -12,8 +12,18 @@ export const FONTS: FontOption[] = [
   { id: 'inter', label: 'Inter', family: 'Inter Variable', stack: `"Inter Variable", "Inter", ${SYSTEM}` },
   { id: 'dm-sans', label: 'DM Sans', family: 'DM Sans Variable', stack: `"DM Sans Variable", ${SYSTEM}` },
   { id: 'poppins', label: 'Poppins', family: 'Poppins', stack: `"Poppins", ${SYSTEM}` },
-  { id: 'space-grotesk', label: 'Space Grotesk', family: 'Space Grotesk Variable', stack: `"Space Grotesk Variable", ${SYSTEM}` },
-  { id: 'playfair', label: 'Playfair Display', family: 'Playfair Display Variable', stack: `"Playfair Display Variable", Georgia, serif` },
+  {
+    id: 'space-grotesk',
+    label: 'Space Grotesk',
+    family: 'Space Grotesk Variable',
+    stack: `"Space Grotesk Variable", ${SYSTEM}`,
+  },
+  {
+    id: 'playfair',
+    label: 'Playfair Display',
+    family: 'Playfair Display Variable',
+    stack: `"Playfair Display Variable", Georgia, serif`,
+  },
   { id: 'system', label: 'System', family: '', stack: SYSTEM },
 ]
 

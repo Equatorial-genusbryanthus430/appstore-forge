@@ -20,10 +20,12 @@ thicker — or the picker feels fake.
    unless it must be global (like `sizeId`, excluded via `OverridableKey`).
 2. Default it in `DEFAULT_SETTINGS` in `store.ts`.
 3. Consume it in `renderScene`.
-4. Add the control to `TunePanel.tsx` using `settings.<key>` to read and `put({...})`
-   to write — `put` routes to the selected screen or the global scope. If the
-   setting is a first-order decision (like store size), it belongs in a step
-   instead (`components/steps/`).
+4. Add the control to the matching section in `components/tune/` using
+   `settings.<key>` to read and `put({...})` to write — `put` routes to the
+   selected screen or the global scope, and a section never needs to know which.
+   `TunePanel.tsx` itself owns only the scope switch. If the setting is a
+   first-order decision (like store size), it belongs in a step instead
+   (`components/steps/`).
 5. List the key in `SECTION_KEYS` in `lib/settings.ts` so the section's override
    dot and "Reset to all screens" link know about it.
 
@@ -33,7 +35,7 @@ mistake; overrides replaced it.
 ## Adding a layout
 
 `src/presets/layouts.ts`. Vertical values are fractions of the tile height;
-horizontal ones of the *composition* width (`tile × span`). Leave `device.width`
+horizontal ones of the _composition_ width (`tile × span`). Leave `device.width`
 out to fit the band (the classic behaviour); set it, plus `cx`/`cy`, for a
 Goldie-style absolute placement (`hero`, `panorama`). `text.left`/`text.width`
 put the copy somewhere other than the padded tile — a panorama keeps it on the
@@ -86,18 +88,40 @@ Exposed in packaged builds too — this is a local tool with no untrusted conten
 and scripting it is a feature.
 
 ```js
-window.__store                  // the zustand store; __store.getState().setStep('review') jumps steps
+window.__store // the zustand store; __store.getState().setStep('review') jumps steps
 window.__renderExport(screens, settings, images, 'png')
-                                // the real export renderer, no native dialog
-window.desktop                  // { platform, chooseFolder, writeFiles, revealPath }
+// the real export renderer, no native dialog
+window.desktop // { platform, chooseFolder, writeFiles, revealPath }
 ```
 
 Load images without faking drag-and-drop:
 
 ```js
-const blob = await new Promise(r => canvas.toBlob(r))
+const blob = await new Promise((r) => canvas.toBlob(r))
 await window.__store.getState().addFiles([new File([blob], 'x.png', { type: 'image/png' })])
 ```
+
+## Tests
+
+`pnpm test` (Vitest, node environment). The suite covers the pure logic only:
+
+- `render/text.test.ts` — markup parsing, line breaking, auto-shrink
+- `render/scene.test.ts` — device geometry, span
+- `lib/settings.test.ts` — override inheritance, `SECTION_KEYS` completeness
+- `lib/progress.test.ts` — readiness and store limits
+- `presets/presets.test.ts` — every preset id resolves, every number is in range
+- `store.test.ts` — variant cycling, slot counts, template reset
+
+Nothing that needs a real canvas is unit-tested, and that is deliberate: a DOM
+assertion cannot see a wrong bezel, a clipped headline, or a font that silently
+fell back. Those are verified from screenshots (below).
+
+The preset test earns its keep because a bad preset id does not throw — every
+lookup falls back to the first row — so a typo ships as a silently wrong render.
+
+Import discipline: the test environment is node, so a module that touches
+`window` at import time must guard it (`store.ts` and `lib/export.ts` do, for
+their automation handles).
 
 ## Verifying a visual change
 
@@ -111,6 +135,7 @@ boot-device { electronAppPath: "release/mac-arm64/AppStore Forge.app", force: tr
 reused and you will verify the wrong thing.
 
 Then:
+
 1. Load synthetic screens with **visually distinct** content (different header
    colours and words). You cannot tell which screenshot landed in which frame if
    they all look alike — this is what catches multi-device arrangements
@@ -126,7 +151,7 @@ If a headline renders in the wrong typeface only in the export, the font was not
 loaded before `ctx.font` used it. Check:
 
 ```js
-document.fonts.check('700 100px "Poppins"')   // must be true
+document.fonts.check('700 100px "Poppins"') // must be true
 ```
 
 and compare `measureText` width against a monospace baseline — equal widths mean
@@ -135,7 +160,7 @@ it fell back.
 ## Release checklist
 
 ```bash
-pnpm typecheck
+pnpm typecheck && pnpm lint && pnpm test
 pkill -f "AppStore Forge.app"; sleep 1
 pnpm version patch --no-git-tag-version
 pnpm install:app

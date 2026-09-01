@@ -24,14 +24,17 @@ pnpm install:app      # build → install to /Applications → launch
 `pnpm dist`, removes the old `/Applications/AppStore Forge.app`, copies the new
 one in, and opens it.
 
-| Command | Use it when |
-| --- | --- |
-| `pnpm install:app` | You changed something and want it in `/Applications` now |
-| `pnpm dist` | You only want the `.dmg` in `release/` |
-| `pnpm app` | Unpacked `.app` in `release/mac-arm64/`, skips the DMG step — fastest |
-| `pnpm electron:dev` | Iterating on the UI, with hot reload |
-| `pnpm dev` | Plain browser version on :4324 |
-| `pnpm typecheck` | Before any build |
+| Command             | Use it when                                                           |
+| ------------------- | --------------------------------------------------------------------- |
+| `pnpm install:app`  | You changed something and want it in `/Applications` now              |
+| `pnpm dist`         | You only want the `.dmg` in `release/`                                |
+| `pnpm app`          | Unpacked `.app` in `release/mac-arm64/`, skips the DMG step — fastest |
+| `pnpm electron:dev` | Iterating on the UI, with hot reload                                  |
+| `pnpm dev`          | Plain browser version on :4324                                        |
+| `pnpm typecheck`    | Before any build                                                      |
+| `pnpm lint`         | ESLint                                                                |
+| `pnpm test`         | Vitest — pure logic only, see `_context/workflows.md`                 |
+| `pnpm format`       | Prettier over the repo                                                |
 
 ### Quit the app before repackaging
 

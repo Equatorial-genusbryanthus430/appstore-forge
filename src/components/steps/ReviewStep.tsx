@@ -18,19 +18,48 @@ export function ReviewStep() {
     r.total === 0
       ? { ok: false, text: 'No screenshots yet', fix: { label: 'Add screenshots', step: 'shots' } }
       : r.missingShots > 0
-        ? { ok: false, text: `${r.missingShots} slot${r.missingShots === 1 ? '' : 's'} still empty`, fix: { label: 'Fill them', step: 'shots' } }
+        ? {
+            ok: false,
+            text: `${r.missingShots} slot${r.missingShots === 1 ? '' : 's'} still empty`,
+            fix: { label: 'Fill them', step: 'shots' },
+          }
         : { ok: true, text: `All ${r.total} screenshots in place` },
     r.missingCopy > 0
-      ? { ok: false, text: `${r.missingCopy} screen${r.missingCopy === 1 ? '' : 's'} without a headline`, fix: { label: 'Write copy', step: 'copy' } }
+      ? {
+          ok: false,
+          text: `${r.missingCopy} screen${r.missingCopy === 1 ? '' : 's'} without a headline`,
+          fix: { label: 'Write copy', step: 'copy' },
+        }
       : { ok: true, text: 'Every screen that shows copy has a headline' },
     r.overLimit
-      ? { ok: false, text: `${r.tiles} tiles — ${r.store} accepts at most ${r.limit.max}`, fix: { label: 'Remove some', step: 'shots' } }
+      ? {
+          ok: false,
+          text: `${r.tiles} tiles — ${r.store} accepts at most ${r.limit.max}`,
+          fix: { label: 'Remove some', step: 'shots' },
+        }
       : r.underMin
-        ? { ok: false, text: `${r.tiles} tile — ${r.store} wants at least ${r.limit.min}`, fix: { label: 'Add more', step: 'shots' } }
-        : { ok: true, text: `${r.tiles} tile${r.tiles === 1 ? '' : 's'} — within ${r.store}'s ${r.limit.min}–${r.limit.max}` },
+        ? {
+            ok: false,
+            text: `${r.tiles} tile — ${r.store} wants at least ${r.limit.min}`,
+            fix: { label: 'Add more', step: 'shots' },
+          }
+        : {
+            ok: true,
+            text: `${r.tiles} tile${r.tiles === 1 ? '' : 's'} — within ${r.store}'s ${r.limit.min}–${r.limit.max}`,
+          },
     r.store === 'App Store' && format === 'png'
-      ? { ok: false, text: 'PNG carries an alpha channel; App Store Connect can reject it', fix: { label: 'Use JPEG', step: 'target' } }
-      : { ok: true, text: format === 'jpeg' ? 'JPEG — no alpha channel, accepted everywhere' : 'PNG is fine for Google Play' },
+      ? {
+          ok: false,
+          text: 'PNG carries an alpha channel; App Store Connect can reject it',
+          fix: { label: 'Use JPEG', step: 'target' },
+        }
+      : {
+          ok: true,
+          text:
+            format === 'jpeg'
+              ? 'JPEG — no alpha channel, accepted everywhere'
+              : 'PNG is fine for Google Play',
+        },
   ]
 
   return (
@@ -42,7 +71,10 @@ export function ReviewStep() {
           <span className="text-[12px]" style={{ color: 'var(--muted)' }}>
             Format
           </span>
-          <div className="flex gap-1 rounded-lg p-1" style={{ background: 'var(--panel)', border: '1px solid var(--line)' }}>
+          <div
+            className="flex gap-1 rounded-lg p-1"
+            style={{ background: 'var(--panel)', border: '1px solid var(--line)' }}
+          >
             <button className="seg" data-active={format === 'png'} onClick={() => setFormat('png')}>
               PNG
             </button>
@@ -61,7 +93,10 @@ export function ReviewStep() {
             </span>
             <span className="flex-1 text-[13px]">{c.text}</span>
             {!c.ok && c.fix && (
-              <button className="linkish" onClick={() => (c.fix!.step === 'target' ? setFormat('jpeg') : setStep(c.fix!.step))}>
+              <button
+                className="linkish"
+                onClick={() => (c.fix!.step === 'target' ? setFormat('jpeg') : setStep(c.fix!.step))}
+              >
                 {c.fix.label}
               </button>
             )}

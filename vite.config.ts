@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -11,4 +11,7 @@ export default defineConfig({
   // Packaged builds load over file://, which has no site root — assets must be relative.
   base: './',
   build: { outDir: 'dist', emptyOutDir: true },
+  // Only pure logic is unit-tested — anything touching a real canvas is verified visually
+  // instead. See _context/workflows.md.
+  test: { include: ['src/**/*.test.ts'], environment: 'node' },
 })

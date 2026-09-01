@@ -20,7 +20,12 @@ export const STEP = {
  * `uniform` leaves every tile on the global layout and arrangement.
  */
 export const RHYTHMS: Rhythm[] = [
-  { id: 'uniform', label: 'Uniform', description: 'Every tile in the same layout and arrangement.', steps: [] },
+  {
+    id: 'uniform',
+    label: 'Uniform',
+    description: 'Every tile in the same layout and arrangement.',
+    steps: [],
+  },
   {
     id: 'editorial',
     label: 'Editorial',

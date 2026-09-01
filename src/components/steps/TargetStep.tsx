@@ -23,12 +23,15 @@ export function TargetStep() {
             className="option-card"
             data-active={current.store === store}
             onClick={() => {
-              if (current.store !== store) setSettings({ sizeId: EXPORT_SIZES.find((s) => s.store === store)!.id })
+              if (current.store !== store)
+                setSettings({ sizeId: EXPORT_SIZES.find((s) => s.store === store)!.id })
             }}
           >
             <span className="text-[15px] font-semibold">{store}</span>
             <span className="text-[12px]" style={{ color: 'var(--muted)' }}>
-              {store === 'App Store' ? 'Up to 10 screenshots per device. PNG or JPEG, no alpha channel.' : '2 to 8 phone screenshots, max 2:1 aspect. PNG or JPEG.'}
+              {store === 'App Store'
+                ? 'Up to 10 screenshots per device. PNG or JPEG, no alpha channel.'
+                : '2 to 8 phone screenshots, max 2:1 aspect. PNG or JPEG.'}
             </span>
           </button>
         ))}
@@ -38,7 +41,12 @@ export function TargetStep() {
         <h2 className="label">Canvas size</h2>
         <div className="grid gap-2 sm:grid-cols-3">
           {EXPORT_SIZES.filter((s) => s.store === current.store).map((s) => (
-            <button key={s.id} className="option-card" data-active={settings.sizeId === s.id} onClick={() => setSettings({ sizeId: s.id })}>
+            <button
+              key={s.id}
+              className="option-card"
+              data-active={settings.sizeId === s.id}
+              onClick={() => setSettings({ sizeId: s.id })}
+            >
               <span className="text-[13px] font-semibold">{s.label}</span>
               <span className="text-[12px] tabular-nums" style={{ color: 'var(--muted)' }}>
                 {s.w} × {s.h}
@@ -51,7 +59,12 @@ export function TargetStep() {
       <section className="flex flex-col gap-2">
         <h2 className="label">Device frame</h2>
         <div className="flex flex-wrap items-center gap-3">
-          <select className="field" style={{ width: 260 }} value={settings.deviceId} onChange={(e) => setSettings({ deviceId: e.target.value })}>
+          <select
+            className="field"
+            style={{ width: 260 }}
+            value={settings.deviceId}
+            onChange={(e) => setSettings({ deviceId: e.target.value })}
+          >
             {DEVICE_GROUPS.map((group) => (
               <optgroup key={group} label={group}>
                 {DEVICES.filter((d) => d.group === group).map((d) => (
@@ -76,7 +89,8 @@ export function TargetStep() {
           </div>
         </div>
         <Tip>
-          Frames are drawn, not photos, so any device works with any store size. Match the frame to the store: an iPhone frame on Google Play looks like a port.
+          Frames are drawn, not photos, so any device works with any store size. Match the frame to the store:
+          an iPhone frame on Google Play looks like a port.
         </Tip>
       </section>
     </StepFrame>

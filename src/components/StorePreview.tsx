@@ -81,8 +81,8 @@ export function StorePreview() {
 
       <div className="store-section">Description</div>
       <p className="text-[12px] leading-relaxed" style={{ color: 'var(--muted)', maxWidth: 560 }}>
-        Two or three short paragraphs in the store's voice go here. This page is a stand-in for the App
-        Store product page so you can judge the strip at the size shoppers actually see it.
+        Two or three short paragraphs in the store's voice go here. This page is a stand-in for the App Store
+        product page so you can judge the strip at the size shoppers actually see it.
       </p>
     </div>
   )

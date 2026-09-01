@@ -4,6 +4,7 @@ import type { DeviceSpec, FrameColor } from '../types'
  * Screen aspects are the real panel ratios; bezel/radius are fractions of the outer frame
  * width, tuned so each family reads as itself — Pixels rounder, Samsungs squarer and thinner.
  */
+// prettier-ignore
 export const DEVICES: DeviceSpec[] = [
   // iOS
   { id: 'iphone-17-pro', label: 'iPhone 17 Pro', group: 'iPhone', screenAspect: 1320 / 2868, bezel: 0.030, radius: 0.150, notch: 'island' },

@@ -68,7 +68,8 @@ export function CopyStep() {
                     </>
                   ) : (
                     <p className="text-[12px]" style={{ color: 'var(--muted)' }}>
-                      This composition is a breather: the device speaks for itself. Change its layout in Fine-tune if you want copy here.
+                      This composition is a breather: the device speaks for itself. Change its layout in
+                      Fine-tune if you want copy here.
                     </p>
                   )}
                 </div>
@@ -78,7 +79,8 @@ export function CopyStep() {
         </div>
       )}
       <Tip>
-        Lead with what the user gets, not the feature name: "Hands full? *Just say it.*" beats "Voice input". Keep headlines under ~{HEADLINE_SOFT} characters so they stay at full size.
+        Lead with what the user gets, not the feature name: "Hands full? *Just say it.*" beats "Voice input".
+        Keep headlines under ~{HEADLINE_SOFT} characters so they stay at full size.
       </Tip>
     </StepFrame>
   )

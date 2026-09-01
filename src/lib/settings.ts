@@ -13,6 +13,14 @@ export const SECTION_KEYS: Record<string, OverridableKey[]> = {
   background: ['background', 'backdropColor'],
   device: ['deviceId', 'frameColorId'],
   layout: ['layout', 'positionId'],
-  type: ['fontId', 'headlineScale', 'subheadScale', 'headlineTracking', 'textColor', 'textAlign', 'highlights'],
+  type: [
+    'fontId',
+    'headlineScale',
+    'subheadScale',
+    'headlineTracking',
+    'textColor',
+    'textAlign',
+    'highlights',
+  ],
   adjust: ['tilt', 'deviceScale'],
 }

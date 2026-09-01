@@ -25,16 +25,28 @@ export function LookStep() {
         <h2 className="label">Template</h2>
         <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(560px, 1fr))' }}>
           {TEMPLATES.map((t) => (
-            <TemplateTile key={t.id} template={t} width={TILE_WIDTH} height={tileHeight} active={templateId === t.id} onApply={() => applyTemplate(t.id)} />
+            <TemplateTile
+              key={t.id}
+              template={t}
+              width={TILE_WIDTH}
+              height={tileHeight}
+              active={templateId === t.id}
+              onApply={() => applyTemplate(t.id)}
+            />
           ))}
         </div>
-        {screenCount > 0 && <Tip>Previews use your own screenshots. Write <code>*word*</code> in a headline to highlight it.</Tip>}
+        {screenCount > 0 && (
+          <Tip>
+            Previews use your own screenshots. Write <code>*word*</code> in a headline to highlight it.
+          </Tip>
+        )}
       </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="label">Rhythm</h2>
         <p className="text-[12px]" style={{ color: 'var(--muted)' }}>
-          The sequence of compositions across the strip. Changes only where the phone and copy sit; colours stay.
+          The sequence of compositions across the strip. Changes only where the phone and copy sit; colours
+          stay.
         </p>
         <RhythmOptions />
       </section>

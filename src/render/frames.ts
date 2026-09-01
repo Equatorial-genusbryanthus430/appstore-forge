@@ -20,7 +20,7 @@ function drawCoverTop(ctx: CanvasRenderingContext2D, img: CanvasImageSource, b: 
 
 function drawNotch(ctx: CanvasRenderingContext2D, screen: Box, device: DeviceSpec, frameW: number) {
   if (device.notch === 'island') {
-    const w = frameW * 0.30
+    const w = frameW * 0.3
     const h = frameW * 0.085
     ctx.fillStyle = '#08080a'
     roundRect(ctx, { x: screen.x + (screen.w - w) / 2, y: screen.y + frameW * 0.028, w, h }, h / 2)
@@ -76,7 +76,16 @@ export function drawDevice(
     ctx.save()
     ctx.strokeStyle = color.edge
     ctx.lineWidth = Math.max(1, box.w * 0.005)
-    roundRect(ctx, { x: box.x + ctx.lineWidth / 2, y: box.y + ctx.lineWidth / 2, w: box.w - ctx.lineWidth, h: box.h - ctx.lineWidth }, outerR)
+    roundRect(
+      ctx,
+      {
+        x: box.x + ctx.lineWidth / 2,
+        y: box.y + ctx.lineWidth / 2,
+        w: box.w - ctx.lineWidth,
+        h: box.h - ctx.lineWidth,
+      },
+      outerR,
+    )
     ctx.stroke()
     ctx.restore()
   }

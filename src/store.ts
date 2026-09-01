@@ -151,9 +151,7 @@ export const useStore = create<State>((set) => ({
   addFiles: async (files) => {
     const usable = files.filter((f) => f.type.startsWith('image/'))
     if (!usable.length) return
-    const loaded = await Promise.all(
-      usable.map(async (file) => ({ file, img: await loadImage(file) })),
-    )
+    const loaded = await Promise.all(usable.map(async (file) => ({ file, img: await loadImage(file) })))
     set((state) => {
       const images = { ...state.images }
       const screens = [...state.screens]
@@ -227,7 +225,9 @@ export const useStore = create<State>((set) => ({
 
   setOverride: (id, patch) =>
     set((state) => ({
-      screens: state.screens.map((s) => (s.id === id ? { ...s, overrides: { ...s.overrides, ...patch } } : s)),
+      screens: state.screens.map((s) =>
+        s.id === id ? { ...s, overrides: { ...s.overrides, ...patch } } : s,
+      ),
     })),
 
   clearOverrides: (id, keys) =>
@@ -240,12 +240,13 @@ export const useStore = create<State>((set) => ({
       }),
     })),
 
-  clearAllOverrides: () =>
-    set((state) => ({ screens: state.screens.map((s) => ({ ...s, overrides: {} })) })),
+  clearAllOverrides: () => set((state) => ({ screens: state.screens.map((s) => ({ ...s, overrides: {} })) })),
   reset: () => set({ screens: [], images: {}, selectedId: null }),
 }))
 
 // Automation handle: lets an agent (Argent/CDP) or the devtools console drive the editor
 // without synthesising drag-and-drop. Kept in packaged builds too — this is a local tool
 // with no untrusted content, and scripting it is a feature rather than an exposure.
-;(window as unknown as { __store: typeof useStore }).__store = useStore
+if (typeof window !== 'undefined') {
+  ;(window as unknown as { __store: typeof useStore }).__store = useStore
+}

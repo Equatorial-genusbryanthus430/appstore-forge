@@ -53,21 +53,28 @@ function Glyph({ step, x, aspect }: { step: RhythmStep; x: number; aspect: numbe
           />
         ))}
       </g>
-      {layout.span > 1 && <line x1={TILE.w} y1={0} x2={TILE.w} y2={TILE.h} stroke="var(--panel)" strokeWidth={1.5} />}
+      {layout.span > 1 && (
+        <line x1={TILE.w} y1={0} x2={TILE.w} y2={TILE.h} stroke="var(--panel)" strokeWidth={1.5} />
+      )}
     </g>
   )
 }
 
 export function RhythmGlyphs({ steps, aspect }: { steps: RhythmStep[]; aspect: number }) {
-  let x = 0
-  const tiles = steps.map((step, i) => {
-    const t = { step, x, key: `${step.layout}-${i}` }
-    x += TILE.w * getLayout(step.layout).span + GAP
-    return t
-  })
-  const width = Math.max(x - GAP, TILE.w)
+  // Each tile starts where the previous ones ended; a span-2 layout takes two tiles of room.
+  const tiles = steps.map((step, i) => ({
+    step,
+    key: `${step.layout}-${i}`,
+    x: steps.slice(0, i).reduce((acc, prev) => acc + TILE.w * getLayout(prev.layout).span + GAP, 0),
+  }))
+  const last = tiles.at(-1)
+  const width = last ? last.x + TILE.w * getLayout(last.step.layout).span : TILE.w
   return (
-    <svg viewBox={`0 0 ${width} ${TILE.h}`} style={{ width: '100%', aspectRatio: `${width} / ${TILE.h}` }} aria-hidden>
+    <svg
+      viewBox={`0 0 ${width} ${TILE.h}`}
+      style={{ width: '100%', aspectRatio: `${width} / ${TILE.h}` }}
+      aria-hidden
+    >
       {tiles.map((t) => (
         <Glyph key={t.key} step={t.step} x={t.x} aspect={aspect} />
       ))}
@@ -91,12 +98,18 @@ export function RhythmOptions() {
   const settings = useStore((s) => s.settings)
   const template = useStore((s) => getTemplateSpec(s.templateId))
   const aspect = frameAspect(getDevice(settings.deviceId))
-  const fallback: RhythmStep = { layout: settings.layout, positionId: settings.positionId, textAlign: settings.textAlign }
+  const fallback: RhythmStep = {
+    layout: settings.layout,
+    positionId: settings.positionId,
+    textAlign: settings.textAlign,
+  }
 
-  const options: { id: string; label: string; description: string; steps: RhythmStep[] }[] = RHYTHMS.map((r) => ({
-    ...r,
-    steps: glyphSteps(r, fallback),
-  }))
+  const options: { id: string; label: string; description: string; steps: RhythmStep[] }[] = RHYTHMS.map(
+    (r) => ({
+      ...r,
+      steps: glyphSteps(r, fallback),
+    }),
+  )
   // A template whose variants carry their own compositions shows up as its own option.
   if (template.variants?.length && !template.rhythm) {
     options.splice(1, 0, {

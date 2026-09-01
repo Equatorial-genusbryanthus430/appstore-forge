@@ -27,11 +27,21 @@ export function TuneStep() {
         <div className="flex min-w-0 flex-1 flex-wrap gap-4" onClick={() => selectScreen(null)}>
           {screens.length === 0 ? (
             <p className="text-[13px]" style={{ color: 'var(--muted)' }}>
-              Add screenshots to see the controls take effect. Global changes still apply to screens you add later.
+              Add screenshots to see the controls take effect. Global changes still apply to screens you add
+              later.
             </p>
           ) : (
             screens.map((screen, i) => (
-              <ScreenCard key={screen.id} screen={screen} index={i} total={screens.length} isSlot={i < slots} width={PREVIEW_WIDTH} height={previewHeight} compact />
+              <ScreenCard
+                key={screen.id}
+                screen={screen}
+                index={i}
+                total={screens.length}
+                isSlot={i < slots}
+                width={PREVIEW_WIDTH}
+                height={previewHeight}
+                compact
+              />
             ))
           )}
         </div>

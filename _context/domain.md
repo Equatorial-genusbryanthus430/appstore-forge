@@ -14,21 +14,21 @@ option.
 
 ## Vocabulary
 
-| Term | Meaning |
-| --- | --- |
-| **Screen** | One output image. Owns a source screenshot, a headline, a subtitle, and its overrides. |
-| **Source screenshot** | The raw PNG the user dropped in. Never modified — only drawn into a device frame. |
-| **Settings** | The global look: background, device, layout, arrangement, type, tilt, scale, export size. |
-| **Override** | A setting pinned on one Screen. Absent key = inherit from Settings. |
-| **Device frame** | The phone/tablet body drawn around a source screenshot. Pure geometry, no bitmaps. |
-| **Layout** | One composition: the text box, the device band (or a fixed device width and centre), and its **span** — how many store tiles it covers. A span-2 layout (panorama) is drawn once at double width and sliced into two PNGs on export. |
-| **Arrangement** (position) | How many device frames appear and where. May pull in neighbouring Screens. |
-| **Template** | A complete look: a Settings preset plus per-screen **variants**. A template *with* variants is a **set template**: it has a fixed number of **slots** (one per variant) that are laid out the moment it is chosen. A template without variants (Classic) is **freeform** — any number of screens. |
-| **Rhythm** | The strip's sequence of compositions (layout + arrangement + alignment per tile), independent of the look — Goldie's "template". `applyRhythm` pins those three keys as overrides by screen index and leaves colours alone. `uniform` clears them. |
-| **Slot** | A Screen created by a set template. `imageId: null` while unfilled; it previews with the drawn placeholder and carries the template's sample copy. Export is gated until every slot is filled. |
-| **Highlight** | A marker band drawn behind `*starred*` words in a headline. Spans cycle through `settings.highlights`. |
-| **Backdrop** | A rounded card drawn behind the device band, between background and text. |
-| **Export size** | Target canvas in pixels. Global — a set cannot mix sizes. |
+| Term                       | Meaning                                                                                                                                                                                                                                                                                           |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Screen**                 | One output image. Owns a source screenshot, a headline, a subtitle, and its overrides.                                                                                                                                                                                                            |
+| **Source screenshot**      | The raw PNG the user dropped in. Never modified — only drawn into a device frame.                                                                                                                                                                                                                 |
+| **Settings**               | The global look: background, device, layout, arrangement, type, tilt, scale, export size.                                                                                                                                                                                                         |
+| **Override**               | A setting pinned on one Screen. Absent key = inherit from Settings.                                                                                                                                                                                                                               |
+| **Device frame**           | The phone/tablet body drawn around a source screenshot. Pure geometry, no bitmaps.                                                                                                                                                                                                                |
+| **Layout**                 | One composition: the text box, the device band (or a fixed device width and centre), and its **span** — how many store tiles it covers. A span-2 layout (panorama) is drawn once at double width and sliced into two PNGs on export.                                                              |
+| **Arrangement** (position) | How many device frames appear and where. May pull in neighbouring Screens.                                                                                                                                                                                                                        |
+| **Template**               | A complete look: a Settings preset plus per-screen **variants**. A template _with_ variants is a **set template**: it has a fixed number of **slots** (one per variant) that are laid out the moment it is chosen. A template without variants (Classic) is **freeform** — any number of screens. |
+| **Rhythm**                 | The strip's sequence of compositions (layout + arrangement + alignment per tile), independent of the look — Goldie's "template". `applyRhythm` pins those three keys as overrides by screen index and leaves colours alone. `uniform` clears them.                                                |
+| **Slot**                   | A Screen created by a set template. `imageId: null` while unfilled; it previews with the drawn placeholder and carries the template's sample copy. Export is gated until every slot is filled.                                                                                                    |
+| **Highlight**              | A marker band drawn behind `*starred*` words in a headline. Spans cycle through `settings.highlights`.                                                                                                                                                                                            |
+| **Backdrop**               | A rounded card drawn behind the device band, between background and text.                                                                                                                                                                                                                         |
+| **Export size**            | Target canvas in pixels. Global — a set cannot mix sizes.                                                                                                                                                                                                                                         |
 
 ## Data model
 
@@ -84,7 +84,7 @@ src/store.ts          zustand: screens, decoded images, settings, selection, pag
 
 `renderScene(ctx, w, h, screen, settings, sources)` draws the preview at ~230px
 and the export at 1320×2868. Same function, same call, only `w`/`h` differ.
-`w`/`h` are one store *tile*; a span-2 layout draws `2w` wide, and the caller
+`w`/`h` are one store _tile_; a span-2 layout draws `2w` wide, and the caller
 sizes the canvas with `sceneSpan(screen, settings)` — the only other place that
 resolves overrides, and it delegates to `effectiveSettings`.
 

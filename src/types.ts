@@ -1,6 +1,5 @@
 export type Background =
-  | { kind: 'solid'; color: string }
-  | { kind: 'gradient'; from: string; to: string; angle: number }
+  { kind: 'solid'; color: string } | { kind: 'gradient'; from: string; to: string; angle: number }
 
 export type NotchKind = 'island' | 'punch' | 'none'
 

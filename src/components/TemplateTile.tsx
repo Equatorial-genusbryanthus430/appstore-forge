@@ -63,14 +63,20 @@ export function TemplateTile({
 }) {
   const global = useStore((s) => s.settings)
   const images = useStore(
-    useShallow((s) => s.screens.map((x) => (x.imageId ? s.images[x.imageId] ?? null : null)).filter(Boolean)),
+    useShallow((s) =>
+      s.screens.map((x) => (x.imageId ? (s.images[x.imageId] ?? null) : null)).filter(Boolean),
+    ),
   )
   const settings = templateSettings(template, global)
   const count = slotCount(template) || 3
   const placeholder = placeholderScreenshot()
-  const at = (i: number) => (images.length ? images[((i % images.length) + images.length) % images.length]! : placeholder)
+  const at = (i: number) =>
+    images.length ? images[((i % images.length) + images.length) % images.length]! : placeholder
 
-  const tiles: { screen: Screen; sources: { self: CanvasImageSource; next: CanvasImageSource; prev: CanvasImageSource } }[] = []
+  const tiles: {
+    screen: Screen
+    sources: { self: CanvasImageSource; next: CanvasImageSource; prev: CanvasImageSource }
+  }[] = []
   for (let i = 0; i < count; i++) {
     const sample = template.samples[i % template.samples.length]
     tiles.push({
@@ -89,7 +95,14 @@ export function TemplateTile({
     <button className="template-card" data-active={active} onClick={onApply}>
       <div className="flex gap-1.5 overflow-x-auto rounded-lg p-1" style={{ background: 'var(--shell)' }}>
         {tiles.map((t) => (
-          <StripTile key={t.screen.id} screen={t.screen} settings={settings} width={width} height={height} sources={t.sources} />
+          <StripTile
+            key={t.screen.id}
+            screen={t.screen}
+            settings={settings}
+            width={width}
+            height={height}
+            sources={t.sources}
+          />
         ))}
       </div>
       <div className="flex items-center justify-between gap-2">

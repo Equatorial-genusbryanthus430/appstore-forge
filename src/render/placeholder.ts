@@ -43,8 +43,14 @@ export function placeholderScreenshot(): HTMLCanvasElement {
   ctx.fillText('Search', w * 0.14, h * 0.2)
 
   const rows = [
-    ['Bananas', true], ['Oat milk', true], ['Sourdough', false], ['Eggs', false],
-    ['Tomatoes', false], ['Basil', false], ['Olive oil', false], ['Coffee beans', false],
+    ['Bananas', true],
+    ['Oat milk', true],
+    ['Sourdough', false],
+    ['Eggs', false],
+    ['Tomatoes', false],
+    ['Basil', false],
+    ['Olive oil', false],
+    ['Coffee beans', false],
   ] as const
   rows.forEach(([label, done], i) => {
     const y = h * (0.27 + i * 0.062)

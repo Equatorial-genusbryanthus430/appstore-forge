@@ -28,7 +28,11 @@ export function Rail() {
   const rhythmId = useStore((s) => s.rhythmId)
   const r = readiness(screens, settings)
   const size = getSize(settings.sizeId)
-  const customised = screens.filter((s) => Object.keys(s.overrides).some((k) => !['layout', 'positionId', 'textAlign', 'background', 'backdropColor', 'highlights'].includes(k))).length
+  const customised = screens.filter((s) =>
+    Object.keys(s.overrides).some(
+      (k) => !['layout', 'positionId', 'textAlign', 'background', 'backdropColor', 'highlights'].includes(k),
+    ),
+  ).length
 
   const rhythmLabel = rhythmId === 'template' ? `${template.label}'s own` : getRhythm(rhythmId).label
   const info: Record<StepId, { status: Status; detail: string }> = {
@@ -44,15 +48,24 @@ export function Rail() {
       r.total === 0
         ? { status: 'todo', detail: 'Headlines & subtitles' }
         : r.missingCopy > 0
-          ? { status: 'attention', detail: `${r.missingCopy} headline${r.missingCopy === 1 ? '' : 's'} missing` }
+          ? {
+              status: 'attention',
+              detail: `${r.missingCopy} headline${r.missingCopy === 1 ? '' : 's'} missing`,
+            }
           : { status: 'done', detail: 'Every screen has a headline' },
-    tune: { status: 'optional', detail: customised ? `${customised} screen${customised === 1 ? '' : 's'} customised` : 'Optional' },
+    tune: {
+      status: 'optional',
+      detail: customised ? `${customised} screen${customised === 1 ? '' : 's'} customised` : 'Optional',
+    },
     review:
       r.total === 0
         ? { status: 'todo', detail: 'Check & export' }
         : r.canExport && r.missingCopy === 0 && !r.overLimit
           ? { status: 'done', detail: 'Ready to export' }
-          : { status: 'attention', detail: `${(r.missingShots ? 1 : 0) + (r.missingCopy ? 1 : 0) + (r.overLimit ? 1 : 0)} to fix` },
+          : {
+              status: 'attention',
+              detail: `${(r.missingShots ? 1 : 0) + (r.missingCopy ? 1 : 0) + (r.overLimit ? 1 : 0)} to fix`,
+            },
   }
 
   return (
@@ -68,7 +81,12 @@ export function Rail() {
           const { status, detail } = info[id]
           return (
             <li key={id}>
-              <button className="rail-step" data-active={step === id} data-status={status} onClick={() => setStep(id)}>
+              <button
+                className="rail-step"
+                data-active={step === id}
+                data-status={status}
+                onClick={() => setStep(id)}
+              >
                 <span className="rail-num">{status === 'done' ? '✓' : i + 1}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-[13px] font-medium">{TITLES[id]}</span>

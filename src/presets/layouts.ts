@@ -1,6 +1,7 @@
 import type { Layout, LayoutId } from '../types'
 
 /** Where the text band and the device band sit vertically. Fractions of canvas height. */
+// prettier-ignore
 export const LAYOUTS: Layout[] = [
   { id: 'text-top', label: 'Text above', span: 1, text: { top: 0.065, height: 0.165 }, device: { top: 0.27, bottom: 0.95 }, padX: 0.09 },
   { id: 'text-bottom', label: 'Text below', span: 1, text: { top: 0.76, height: 0.165 }, device: { top: 0.06, bottom: 0.72 }, padX: 0.09 },

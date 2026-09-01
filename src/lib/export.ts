@@ -1,5 +1,6 @@
 import { zipSync } from 'fflate'
-import { renderScene, sceneSpan, stripMarkup } from '../render/scene'
+import { renderScene, sceneSpan } from '../render/scene'
+import { stripMarkup } from '../render/text'
 import { getSize } from '../presets/sizes'
 import type { Screen, Settings } from '../types'
 
@@ -19,7 +20,11 @@ export type ExportResult =
   | { kind: 'cancelled' }
 
 const slug = (text: string, fallback: string) =>
-  text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || fallback
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 40) || fallback
 
 function toBlob(canvas: HTMLCanvasElement, format: 'png' | 'jpeg'): Promise<Blob> {
   return new Promise((resolve, reject) => {
@@ -50,7 +55,7 @@ export async function renderAll(
   // Same neighbour-wrapping the preview uses, so multi-device arrangements export identically.
   const imageAt = (i: number) => {
     const target = screens[(i + screens.length) % (screens.length || 1)]
-    return target?.imageId ? images[target.imageId] ?? null : null
+    return target?.imageId ? (images[target.imageId] ?? null) : null
   }
 
   const files: { name: string; data: Uint8Array }[] = []
@@ -118,4 +123,6 @@ export async function exportAll(
 // Automation hook, mirroring `window.__store`: renders the real export at full store
 // resolution without going through the native folder dialog, so the export path itself
 // can be exercised by an agent or from the devtools console.
-;(window as unknown as { __renderExport: typeof renderAll }).__renderExport = renderAll
+if (typeof window !== 'undefined') {
+  ;(window as unknown as { __renderExport: typeof renderAll }).__renderExport = renderAll
+}

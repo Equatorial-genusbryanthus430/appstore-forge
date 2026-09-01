@@ -89,7 +89,11 @@ export function App() {
           {dragging && step !== 'shots' && (
             <div
               className="pointer-events-none absolute inset-4 flex items-center justify-center rounded-2xl border-2 border-dashed text-[14px] font-semibold"
-              style={{ borderColor: 'var(--accent)', background: 'rgba(30,111,245,0.06)', color: 'var(--accent)' }}
+              style={{
+                borderColor: 'var(--accent)',
+                background: 'rgba(30,111,245,0.06)',
+                color: 'var(--accent)',
+              }}
             >
               Drop to add screenshots
             </div>
@@ -102,13 +106,17 @@ export function App() {
                   ? `Saved ${result.count} file${result.count === 1 ? '' : 's'} to ${result.dir.split('/').slice(-1)[0]}`
                   : `Downloaded ${result.count} file${result.count === 1 ? '' : 's'}`}
               </span>
-              {result.kind === 'saved' && <button onClick={() => void desktop()?.revealPath(result.dir)}>Show in Finder</button>}
+              {result.kind === 'saved' && (
+                <button onClick={() => void desktop()?.revealPath(result.dir)}>Show in Finder</button>
+              )}
               <button onClick={() => setResult(null)}>Dismiss</button>
             </div>
           )}
 
           {error && (
-            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-lg bg-red-600 px-4 py-2 text-[12px] text-white">{error}</div>
+            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-lg bg-red-600 px-4 py-2 text-[12px] text-white">
+              {error}
+            </div>
           )}
         </main>
         <Footer onExport={onExport} exporting={exporting} />

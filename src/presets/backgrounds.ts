@@ -1,8 +1,22 @@
 import type { Background } from '../types'
 
 export const SOLID_PRESETS: string[] = [
-  '#eaf2ff', '#fdeee4', '#e6f6ee', '#eeeaf9', '#fde9ef', '#fdf3d8', '#e8f4f6', '#f1f1f3',
-  '#1e6ff5', '#f0502d', '#12885a', '#1f2937', '#7c3aed', '#db2777', '#0d9488', '#111114',
+  '#eaf2ff',
+  '#fdeee4',
+  '#e6f6ee',
+  '#eeeaf9',
+  '#fde9ef',
+  '#fdf3d8',
+  '#e8f4f6',
+  '#f1f1f3',
+  '#1e6ff5',
+  '#f0502d',
+  '#12885a',
+  '#1f2937',
+  '#7c3aed',
+  '#db2777',
+  '#0d9488',
+  '#111114',
 ]
 
 export const GRADIENT_PRESETS: Extract<Background, { kind: 'gradient' }>[] = [

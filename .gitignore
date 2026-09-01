@@ -1,6 +1,8 @@
-node_modules
-dist
 .DS_Store
+.vitest
 *.local
-tsconfig.tsbuildinfo
+coverage
+dist
+node_modules
 release
+tsconfig.tsbuildinfo
