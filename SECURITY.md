@@ -28,6 +28,10 @@ The latest release only. There are no backports; fixes ship in the next version.
 
 ## A note on the build
 
-Releases are **unsigned and not notarized**. macOS will ask you to confirm the
-first launch, which is expected. If you would rather not trust a binary, the
-build is one command from source: `pnpm install && pnpm dist`.
+There are no published binaries — the project ships as source and you build it
+yourself with `pnpm install && pnpm install:app`. The resulting app is unsigned
+and not notarized, which is why a copy moved to another Mac needs a right-click
+→ Open the first time.
+
+That also means there is nothing to supply-chain: the only code you run is the
+code you cloned, plus its npm dependencies.

@@ -31,30 +31,44 @@ still missing before the set can be uploaded.
   an offset, a breather — instead of ten identical tiles.
 - **Nothing leaves the machine.** No network calls at all.
 
-## Install
+## Build and run it
 
-Grab the `.dmg` from [Releases](https://github.com/hebertporto/appstore-forge/releases),
-or build it yourself:
+There is no download. This is a build-it-yourself tool — you need Node and
+[pnpm](https://pnpm.io/installation), and three commands:
 
 ```bash
+git clone https://github.com/hebertporto/appstore-forge.git
+cd appstore-forge
 pnpm install
 pnpm install:app     # build, install to /Applications, launch
 ```
 
-Either way it becomes a normal Mac app — no terminal, no dev server.
+That last command builds the app, drops it in `/Applications`, and opens it.
+From then on it is a normal Mac app — no terminal, no dev server, and it keeps
+working after you close the shell you built it from.
 
-Builds are **unsigned**. One you built locally opens normally; a downloaded one
-needs a right-click → **Open** the first time. macOS only, Apple Silicon, for
-now — the web build (`pnpm dev`) runs anywhere and does everything except the
-native folder picker.
+Just want to look at it first? `pnpm dev` runs it in a browser on `:4324` with
+no build step. Everything works there except the native folder picker — export
+falls back to a zip download.
 
 | Command             | What it does                                                         |
 | ------------------- | -------------------------------------------------------------------- |
 | `pnpm install:app`  | Build, install to `/Applications`, launch                            |
-| `pnpm dist`         | Installable `.dmg` in `release/`                                     |
+| `pnpm dist`         | Installable `.dmg` in `release/`, if you want one                    |
 | `pnpm app`          | Unpacked `.app` in `release/mac-arm64/` — faster, for trying changes |
 | `pnpm electron:dev` | App window with hot reload, for development                          |
 | `pnpm dev`          | Plain browser version on `:4324`                                     |
+
+### What you should expect
+
+- **macOS on Apple Silicon.** That is the only packaging target today. The web
+  build (`pnpm dev`) runs anywhere.
+- **The build is unsigned**, deliberately — there is no Apple Developer account
+  behind it. Because _you_ built it locally macOS does not quarantine it, so it
+  opens normally. Copy that `.app` to another Mac and Gatekeeper will block it
+  until you right-click → **Open** once. That is expected, not a broken build.
+- **No releases, no binaries.** Nothing to download and nothing to trust — the
+  source is the distribution.
 
 ## How it works
 
